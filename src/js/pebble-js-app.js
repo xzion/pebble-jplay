@@ -25,8 +25,8 @@ function GetLocalTrack() {
 					console.log("Matched: " + track_obj[2] + " - " + track_obj[1]);
 
 					Pebble.sendAppMessage({
-			        	"localTrack" : track_obj[1].replace(/&amp;/g, "&").replace(/&apos;/g, "'"),
-			        	"localArtist" : track_obj[2].replace(/&amp;/g, "&").replace(/&apos;/g, "'"),
+			        	"localTrack" : decodeURI(track_obj[1]),
+			        	"localArtist" : decodeURI(track_obj[2]),
 					}, gotACK, gotNACK);
 					console.log("Local track sent!");
 				} else {
@@ -58,8 +58,8 @@ function GetLiveTrack() {
 					console.log("Matched: " + track_obj[2] + " - " + track_obj[1]);
 
 					Pebble.sendAppMessage({
-			        	"liveTrack" : track_obj[1].replace(/&amp;/g, "&").replace(/&apos;/g, "'"),
-			        	"liveArtist" : track_obj[2].replace(/&amp;/g, "&").replace(/&apos;/g, "'"),
+			        	"liveTrack" : decodeURI(track_obj[1]),
+			        	"liveArtist" : decodeURI(track_obj[2]),
 					}, gotACK, gotNACK);
 					console.log("Live track sent!");
 
