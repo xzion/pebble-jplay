@@ -1,0 +1,17 @@
+{
+  "uuid": "a6979377-689a-4a05-81fb-9b06afb08fd9",
+  "shortName": "jplay",
+  "longName": "jplay",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0.0",
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
