@@ -1,12 +1,11 @@
 #include "pebble.h"
-#include "xzion1.h"
+#include "jplay.h"
 #include "messaging.h"
-#include "bitcoin.h"
-#include "weather.h"
 
 static uint8_t nackcount = 0;
-static char temp_text[10];
 bool js_initialized = false;
+static char liveText[100];
+static char localText[100];
 
 
 void app_message_init(void) {
@@ -36,16 +35,9 @@ void in_dropped_handler(AppMessageResult reason, void *context) {
 
 void out_failed_handler(DictionaryIterator *failed, AppMessageResult reason, void *context) {
 	// Outgoing message failed (Received NACK)
-	if (conn_state) {
-		nackcount++;
-	}
+	nackcount++;	
 	
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Out Failed! Code: %d, Count: %d", reason, nackcount);
-
-	if (nackcount > 3) {
-		text_layer_set_text(btc_layer, "Multiple NACKs");
-		vibes_short_pulse();
-	}
 }
 
 
@@ -61,75 +53,39 @@ void in_received_handler(DictionaryIterator *received, void *context) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "JS Loaded Received, calling intial update");
 
 		// Request initial data
-		request_bitcoin_price();
+		DictionaryIterator *iter;
+	    app_message_outbox_begin(&iter);
+
+	    Tuplet value = TupletInteger(REQUEST_TRACKS, 1);
+	    dict_write_tuplet(iter, &value);
+
+	    APP_LOG(APP_LOG_LEVEL_DEBUG, "Requesting Tracks!");
+	    app_message_outbox_send();
 
 		// Allow other components to send requests
 		js_initialized = true;
 	}
 
-	Tuple *btc_tuple = dict_find(received, RETURN_BTC);
-	if (btc_tuple) {
-		// New BTC price received
-		int32_t btcpr = btc_tuple->value->int32;
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "BTC Price Received: %li", btcpr);
+	Tuple *livetrack_tuple = dict_find(received, LIVE_TRACK);
+	Tuple *liveartist_tuple = dict_find(received, LIVE_ARTIST);
+	if (livetrack_tuple && liveartist_tuple) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Got new Live Track info");
 
-		update_bitcoin_price(btc_tuple->value->int32);
-
-		// Call the next update
-		if (use_uq_weather) {
-			request_uq_temperature();
-		} else {
-			request_openweather();
-		}
-	}
-
-	Tuple *uqtemp_tuple = dict_find(received, RETURN_TEMP);
-	if (uqtemp_tuple) {
-		snprintf(temp_text, 10, "%s", uqtemp_tuple->value->cstring);
-		// New UQ temp received
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "UQ Temp Received: %s", uqtemp_tuple->value->cstring);
-
-		// Set the temperature
-		text_layer_set_text(temp_layer, temp_text);
-
-		// Call the next update
-		request_openweather();
+		snprintf(liveText, 100, "- Live Stream -\n%s\n%s", liveartist_tuple->value->cstring, livetrack_tuple->value->cstring);
+		text_layer_set_text(live_layer, liveText);
 
 	}
 
-	Tuple *owtemp_tuple = dict_find(received, RETURN_OWTEMP);
-	if (owtemp_tuple) {
-		// New UQ temp received
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "OW Temp Received: %s", owtemp_tuple->value->cstring);
+	Tuple *localtrack_tuple = dict_find(received, LOCAL_TRACK);
+	Tuple *localartist_tuple = dict_find(received, LOCAL_ARTIST);
+	if (localtrack_tuple && localartist_tuple) {
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Got new Local Track info");
 
-		// Set the temperature
-		if (!use_uq_weather) {
-			snprintf(temp_text, 10, "%s", owtemp_tuple->value->cstring);
-			text_layer_set_text(temp_layer, temp_text);
-		}
-	}
-
-	Tuple *cond_tuple = dict_find(received, RETURN_OW);
-	if (cond_tuple) {
-		// New weather conditions received
-		int32_t cond = cond_tuple->value->int32;
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "OW Condition Code Received: %li", cond);
-
-		// Update the icon
-		update_weather_conditions(cond);
-
-		// Display time of update
-		time_t then = time(NULL);
-		struct tm *now = localtime(&then);
-		static char update_time[20];
-		strftime(update_time, 20, "Last Update: %I:%M", now);      
-		text_layer_set_text(fitbit_layer, update_time);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Set Update Time");
-
-
-		// Call the next update
+		snprintf(localText, 100, "- QLD Radio -\n%s\n%s", localartist_tuple->value->cstring, localtrack_tuple->value->cstring);
+		text_layer_set_text(local_layer, localText);
 
 	}
+
 
 
 

@@ -1,17 +1,15 @@
-#ifndef xzion_messaging_h
-#define xzion_messaging_h
+#ifndef jplay_messaging_h
+#define jplay_messaging_h
 
 extern bool js_initialized;
 
 enum AppMessageKey {
-  REQUEST_BTC = 1,
-  REQUEST_TEMP = 2,
-  RETURN_BTC = 3,
-  RETURN_TEMP = 4,
-  JS_LOADED = 5,
-  REQUEST_OW = 6,
-  RETURN_OW = 7,
-  RETURN_OWTEMP = 8
+  JS_LOADED = 1,
+  REQUEST_TRACKS = 2,
+  LIVE_ARTIST = 3,
+  LIVE_TRACK = 4,
+  LOCAL_ARTIST = 5,
+  LOCAL_TRACK = 6
 };
 
 void app_message_init(void);

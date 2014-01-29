@@ -2,16 +2,34 @@
   "uuid": "a6979377-689a-4a05-81fb-9b06afb08fd9",
   "shortName": "jplay",
   "longName": "jplay",
-  "companyName": "MakeAwesomeHappen",
+  "companyName": "xzion",
   "versionCode": 1,
   "versionLabel": "1.0.0",
   "watchapp": {
-    "watchface": false
+    "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "jsLoaded": 1,
+    "requestTracks": 2,
+    "liveArtist": 3,
+    "liveTrack": 4,
+    "localArtist": 5,
+    "localTrack": 6
   },
   "resources": {
-    "media": []
+    "media": [
+      {
+        "name" : "FONT_MYRIAD_16",
+        "type" : "font",
+        "file" : "fonts/MyriadPro.ttf"
+      },
+      {
+        "name" : "FONT_MYRIAD_14",
+        "type" : "font",
+        "file" : "fonts/MyriadPro.ttf"
+      }
+
+
+    ]
   }
 }
