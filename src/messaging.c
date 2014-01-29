@@ -15,9 +15,8 @@ void app_message_init(void) {
 	app_message_register_outbox_sent(out_sent_handler);
 	app_message_register_outbox_failed(out_failed_handler);
 
-	const int inbound_size = 64;
-	const int outbound_size = 64;
-	app_message_open(inbound_size, outbound_size);
+	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+
 }
 
 // AppMessage Handlers
